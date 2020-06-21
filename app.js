@@ -1,23 +1,20 @@
-var express= require('express');
-var bodyParser= require('body-parser');
-var cors = require('cors');
-var useragent=require('express-useragent');
 
-var app= module.exports = express();
-app.use(bodyParser.json());
-app.use(cors());
-app.use(useragent.express());
 
-var api= '/api/whoami';
+const express = require('express');
 
-app.get(api, function(req,res,next){
-var language= req.acceptsLanguages();
-var software= "OS: " + req.useragent.os + ", Browser: " + req.useragent.browser;
-var ipaddress= req.ip;
+const port = process.env.PORT || 3000;
 
-res.json({'ipaddress':ipaddress, 'language':language[0], 'software':software})
-})
+var app = express();
 
-app.listen(3000, function(){
-    console.log('working')
+app.get('/', (req, res) => {
+  var result = {};
+  result.ipaddress = req.ip.match(/\d+\.\d+\.\d+\.\d+/)[0];
+  result.language = req.acceptsLanguages()[0];
+  result.software = req.get('user-agent').match(/\((.+?)\)/)[1];
+  //console.log(req.ip);
+  res.send(result);
+});
+
+app.listen(port, () => {
+  console.log(`Server is up and running on port ${port}.`);
 });
